@@ -4,8 +4,8 @@
 package main
 
 import (
-	"github.com/zngw/log"
 	"github.com/zngw/kafka"
+	"github.com/zngw/log"
 	"os/signal"
 	"runtime"
 	"syscall"
@@ -13,29 +13,36 @@ import (
 
 func main() {
 	// 初始化日志
-	log.Init(nil)
+	err := log.Init(nil)
+	if err != nil {
+		panic(err)
+	}
 
 	// 初始化生产生
-	kafka.InitProducer("192.168.1.29:9092")
+	err = kafka.InitProducer("192.168.1.29:9092")
+	if err != nil {
+		panic(err)
+	}
+
+	// 关闭
+	defer kafka.Close()
 
 	// 发送测试消息
 	kafka.Send("Test","This is Test Msg")
 	kafka.Send("Test","Hello Guoke")
 
-	// 关闭
-	kafka.Close()
-
 	signal.Ignore(syscall.SIGHUP)
 	runtime.Goexit()
 }
+
 ```
 ## 消费者测试consumer.go
 ```go
 package main
 
 import (
-	"github.com/zngw/log"
 	"github.com/zngw/kafka"
+	"github.com/zngw/log"
 	"os/signal"
 	"runtime"
 	"syscall"
@@ -43,14 +50,23 @@ import (
 
 func main() {
 	// 初始化日志
-	log.Init(nil)
+	err := log.Init(nil)
+	if err != nil {
+		panic(err)
+	}
 
 	// 初始化消费者
-	kafka.InitConsumer("127.0.0.1:9092")
+	err = kafka.InitConsumer("192.168.1.29:9092")
+	if err != nil {
+		panic(err)
+	}
 
 	// 监听
 	go func() {
-		kafka.LoopConsumer("Test", TopicCallBack)
+		err = kafka.LoopConsumer("Test", TopicCallBack)
+		if err != nil {
+			panic(err)
+		}
 	}()
 
 	signal.Ignore(syscall.SIGHUP)
