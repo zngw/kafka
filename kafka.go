@@ -28,6 +28,8 @@ func InitConsumer(hosts string) (err error){
 		log.Error(err)
 		return
 	}
+
+	return
 }
 
 // 消费者循环
@@ -60,6 +62,8 @@ func InitProducer(hosts string) (err error){
 		log.Error(err)
 		return
 	}
+
+	return
 }
 
 // 发送消息
